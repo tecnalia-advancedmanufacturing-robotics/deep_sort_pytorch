@@ -99,7 +99,7 @@ class Tracker(object):
                     ori_im = self.drawPoints(array, ori_im)
 
             end = time.time()
-            #print("time: {:.03f}s, fps: {:.03f}".format(end-start, 1/(end-start)))
+            print("time: {:.03f}s, fps: {:.03f}".format(end-start, 1/(end-start)))
 
             if self.args.display:
                 cv2.imshow("test", ori_im)
@@ -110,7 +110,6 @@ class Tracker(object):
         return idx_frame
 
     def publishCallback(self, array):
-        pub_count = pub_count + 1
         people = locations_2d()
         people.header.frame_id = "/camera_link"
         people.header.stamp = rospy.Time.now()

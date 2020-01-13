@@ -56,7 +56,8 @@ def callback(msg):
     ori_im = cv2.resize(ori_im, (640, 480))
     im = cv2.cvtColor(ori_im, cv2.COLOR_BGR2RGB)
 
-    if idx_frame % args.frame_interval:
+    th = idx_frame % args.frame_interval
+    if th == 0:
         # do detection
         bbox_xywh, cls_conf, cls_ids = detector(im)
         if bbox_xywh is not None:
@@ -87,8 +88,9 @@ def callback(msg):
                 publishCallback(array)
                 ori_im = draw_boxes(ori_im, bbox_xyxy, identities)
                 ori_im = drawPoints(array, ori_im)
-    if args.display:
-        show_image(ori_im)
+
+            if args.display:
+                show_image(ori_im)
 
 # Initiaze DL stuff
 
@@ -111,8 +113,8 @@ class_names = detector.class_names
 
 # Initialize ROS stuff
 rospy.init_node('workspace_monitoring_node', anonymous=True)
-pub = rospy.Publisher('object_location', locations_2d, queue_size=1)
-sub_image = rospy.Subscriber("/camera/color/image_raw/compressed", CompressedImage, callback, queue_size=1)
+pub = rospy.Publisher('obstacle_locations', locations_2d, queue_size=1)
+sub_image = rospy.Subscriber(args.VIDEO_TOPIC, CompressedImage, callback, queue_size=1)
 print("ROS network initialized!")
 t_start = time.time()
 
