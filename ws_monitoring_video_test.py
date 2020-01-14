@@ -99,7 +99,7 @@ class Tracker(object):
                     ori_im = self.drawPoints(array, ori_im)
 
             end = time.time()
-            print("time: {:.03f}s, fps: {:.03f}".format(end-start, 1/(end-start)))
+            #print("time: {:.03f}s, fps: {:.03f}".format(end-start, 1/(end-start)))
 
             if self.args.display:
                 cv2.imshow("test", ori_im)
