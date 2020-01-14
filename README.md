@@ -25,7 +25,7 @@ pip install -r requirements.txt
 **1. Clone this repository**
 
 ```sh
-git clone git@github.com:ZQPei/deep_sort_pytorch.git
+git clone git@github.com:tecnalia-advancedmanufacturing-robotics/deep_sort_pytorch.git
 ```
 
 **2. Download YOLOv3 parameters**
@@ -62,6 +62,3 @@ cd ../../..
 - paper: [YOLOv3](https://pjreddie.com/media/files/papers/YOLOv3.pdf)
 
 - code: [Joseph Redmon/yolov3](https://pjreddie.com/darknet/yolo/)
-
-
-
