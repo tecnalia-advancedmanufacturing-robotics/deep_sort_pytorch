@@ -7,5 +7,5 @@ If you want to train YOLOv3 on your custom dataset, please search `YOLOv3` on gi
 ## Quick forward
 ```bash
 cd YOLOv3
-python 
+python
 ```

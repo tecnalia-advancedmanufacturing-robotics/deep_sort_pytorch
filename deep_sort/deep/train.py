@@ -95,7 +95,7 @@ def train(epoch):
         correct += outputs.max(dim=1)[1].eq(labels).sum().item()
         total += labels.size(0)
 
-        # print 
+        # print
         if (idx+1)%interval == 0:
             end = time.time()
             print("[progress:{:.1f}%]time:{:.2f}s Loss:{:.5f} Correct:{}/{} Acc:{:.3f}%".format(
@@ -103,7 +103,7 @@ def train(epoch):
             ))
             training_loss = 0.
             start = time.time()
-    
+
     return train_loss/len(trainloader), 1.- correct/total
 
 def test(epoch):
@@ -122,7 +122,7 @@ def test(epoch):
             test_loss += loss.item()
             correct += outputs.max(dim=1)[1].eq(labels).sum().item()
             total += labels.size(0)
-        
+
         print("Testing ...")
         end = time.time()
         print("[progress:{:.1f}%]time:{:.2f}s Loss:{:.5f} Correct:{}/{} Acc:{:.3f}%".format(

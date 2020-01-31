@@ -20,7 +20,7 @@ def draw_boxes(img, bbox, identities=None, offset=(0,0)):
         y1 += offset[1]
         y2 += offset[1]
         # box text and bar
-        id = int(identities[i]) if identities is not None else 0    
+        id = int(identities[i]) if identities is not None else 0
         color = compute_color_for_labels(id)
         label = '{}{:d}'.format("", id)
         t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 2 , 2)[0]

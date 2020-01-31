@@ -21,7 +21,8 @@ idx_frame = 0
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("VIDEO_TOPIC", type=str, default="/camera/color/image_raw/compressed")
+    parser.add_argument("IMAGE_TOPIC", type=str, default="/camera/color/image_raw/compressed")
+    parser.add_argument("OUTPUT_TOPIC", type=str, default="/image/locations")
     parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yaml")
     parser.add_argument("--config_deepsort", type=str, default="./configs/deep_sort.yaml")
     parser.add_argument("--ignore_display", dest="display", action="store_false", default=True)
@@ -53,7 +54,7 @@ def callback(msg):
     np_arr = np.fromstring(msg.data, np.uint8)
     #ori_im = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR) OpenCV < 3.0
     ori_im = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0
-    ori_im = cv2.resize(ori_im, (640, 480))
+    ori_im = cv2.resize(ori_im, (320, 240))
     im = cv2.cvtColor(ori_im, cv2.COLOR_BGR2RGB)
 
     th = idx_frame % args.frame_interval
@@ -76,7 +77,7 @@ def callback(msg):
                 bbox_xyxy = outputs[:,:4]
                 identities = outputs[:,-1]
                 array = []
-                
+
                 for i,box in enumerate(bbox_xyxy):
                     x1,y1,x2,y2 = [int(i) for i in box]
                     id = identities[i]
@@ -113,8 +114,8 @@ class_names = detector.class_names
 
 # Initialize ROS stuff
 rospy.init_node('workspace_monitoring_node', anonymous=True)
-pub = rospy.Publisher('obstacle_locations', locations_2d, queue_size=1)
-sub_image = rospy.Subscriber(args.VIDEO_TOPIC, CompressedImage, callback, queue_size=1)
+pub = rospy.Publisher(args.OUTPUT_TOPIC, locations_2d, queue_size=1)
+sub_image = rospy.Subscriber(args.IMAGE_TOPIC, CompressedImage, callback, queue_size=1)
 print("ROS network initialized!")
 t_start = time.time()
 

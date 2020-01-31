@@ -35,7 +35,7 @@ class YOLOv3(object):
 
         img = cv2.resize(img, self.size)
         img = torch.from_numpy(img).float().permute(2,0,1).unsqueeze(0)
-        
+
         # forward
         with torch.no_grad():
             img = img.to(self.device)
@@ -48,7 +48,7 @@ class YOLOv3(object):
 
         if len(boxes)==0:
             return None,None,None
-        
+
         height , width = ori_img.shape[:2]
         bbox = boxes[:,:4]
         if self.is_xywh:

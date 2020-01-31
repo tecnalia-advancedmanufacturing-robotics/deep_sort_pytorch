@@ -90,10 +90,10 @@ def post_process(boxes, num_classes, conf_thresh=0.01, nms_thresh=0.45, obj_thre
             keep = boxes_nms(masked_boxes[:,:4], masked_boxes[:,5], nms_thresh)
 
             nmsed_boxes = masked_boxes[keep, :]
-        
+
             processed_boxes.append(nmsed_boxes)
         processed_boxes = torch.cat(processed_boxes, dim=0)
-    
+
     results_boxes.append(processed_boxes)
 
     return results_boxes
@@ -104,7 +104,7 @@ def xywh_to_xyxy(boxes_xywh):
     boxes_xyxy[:,0] = boxes_xywh[:,0] - boxes_xywh[:,2]/2.
     boxes_xyxy[:,0] = boxes_xywh[:,0] - boxes_xywh[:,2]/2.
     boxes_xyxy[:,0] = boxes_xywh[:,0] - boxes_xywh[:,2]/2.
-    
+
     return boxes_xyxy
 
 def xyxy_to_xywh(boxes_xyxy):
@@ -112,12 +112,12 @@ def xyxy_to_xywh(boxes_xyxy):
         boxes_xywh = boxes_xyxy.clone()
     elif isinstance(boxes_xyxy, np.ndarray):
         boxes_xywh = boxes_xyxy.copy()
-        
+
     boxes_xywh[:,0] = (boxes_xyxy[:,0] + boxes_xyxy[:,2])/2.
     boxes_xywh[:,1] = (boxes_xyxy[:,1] + boxes_xyxy[:,3])/2.
     boxes_xywh[:,2] = boxes_xyxy[:,2] - boxes_xyxy[:,0]
     boxes_xywh[:,3] = boxes_xyxy[:,3] - boxes_xyxy[:,1]
-    
+
     return boxes_xywh
 
 
@@ -127,7 +127,7 @@ def nms(boxes, nms_thresh):
 
     det_confs = torch.zeros(len(boxes))
     for i in range(len(boxes)):
-        det_confs[i] = boxes[i][4]                
+        det_confs[i] = boxes[i][4]
 
     _,sortIds = torch.sort(det_confs, descending=True)
     out_boxes = []
@@ -158,7 +158,7 @@ def get_all_boxes(output, conf_thresh, num_classes, only_objectness=1, validatio
         pred, anchors, num_anchors = output[i]['x'].data, output[i]['a'], output[i]['n'].item()
         boxes = get_region_boxes(pred, conf_thresh, num_classes, anchors, num_anchors, \
                 only_objectness=only_objectness, validation=validation, use_cuda=use_cuda)
-        
+
         all_boxes.append(boxes)
     return torch.cat(all_boxes, dim=1)
 
@@ -192,7 +192,7 @@ def get_region_boxes(output, obj_thresh, num_classes, anchors, num_anchors, only
     cls_max_confs, cls_max_ids = torch.max(cls_confs, 1)
     cls_max_confs = cls_max_confs.view(-1)
     cls_max_ids = cls_max_ids.view(-1).float()
-    
+
     # sz_hw = h*w
     # sz_hwa = sz_hw*num_anchors
     # det_confs = convert2cpu(det_confs)
@@ -221,7 +221,7 @@ def get_region_boxes(output, obj_thresh, num_classes, anchors, num_anchors, only
     #                     conf = det_confs[ind]
     #                 else:
     #                     conf = det_confs[ind] * cls_max_confs[ind]
-    
+
     #                 if conf > conf_thresh:
     #                     bcx = xs[ind]
     #                     bcy = ys[ind]
@@ -280,7 +280,7 @@ def get_region_boxes(output, obj_thresh, num_classes, anchors, num_anchors, only
 #     cls_max_confs = cls_max_confs.view(-1)
 #     cls_max_ids = cls_max_ids.view(-1)
 #     t1 = time.time()
-    
+
 #     sz_hw = h*w
 #     sz_hwa = sz_hw*num_anchors
 #     det_confs = convert2cpu(det_confs)
@@ -303,7 +303,7 @@ def get_region_boxes(output, obj_thresh, num_classes, anchors, num_anchors, only
 #                         conf = det_confs[ind]
 #                     else:
 #                         conf = det_confs[ind] * cls_max_confs[ind]
-    
+
 #                     if conf > conf_thresh:
 #                         bcx = xs[ind]
 #                         bcy = ys[ind]
@@ -464,7 +464,7 @@ def do_detect(model, img, conf_thresh, nms_thresh, use_cuda=True):
 
     out_boxes = model(img)
     boxes = get_all_boxes(out_boxes, conf_thresh, model.num_classes, use_cuda=use_cuda)[0]
-    
+
     t3 = time.time()
     boxes = nms(boxes, nms_thresh)
     t4 = time.time()
@@ -505,7 +505,7 @@ def scale_bboxes(bboxes, width, height):
         dets[i][2] = dets[i][2] * width
         dets[i][3] = dets[i][3] * height
     return dets
-      
+
 def file_lines(thefilepath):
     count = 0
     thefile = open(thefilepath, 'rb')
@@ -522,7 +522,7 @@ def get_image_size(fname):
     from draco'''
     with open(fname, 'rb') as fhandle:
         head = fhandle.read(24)
-        if len(head) != 24: 
+        if len(head) != 24:
             return
         if imghdr.what(fname) == 'png':
             check = struct.unpack('>i', head[4:8])[0]
@@ -534,15 +534,15 @@ def get_image_size(fname):
         elif imghdr.what(fname) == 'jpeg' or imghdr.what(fname) == 'jpg':
             try:
                 fhandle.seek(0) # Read 0xff next
-                size = 2 
-                ftype = 0 
+                size = 2
+                ftype = 0
                 while not 0xc0 <= ftype <= 0xcf:
                     fhandle.seek(size, 1)
                     byte = fhandle.read(1)
                     while ord(byte) == 0xff:
                         byte = fhandle.read(1)
                     ftype = ord(byte)
-                    size = struct.unpack('>H', fhandle.read(2))[0] - 2 
+                    size = struct.unpack('>H', fhandle.read(2))[0] - 2
                 # We are at a SOFn block
                 fhandle.seek(1, 1)  # Skip `precision' byte.
                 height, width = struct.unpack('>HH', fhandle.read(4))

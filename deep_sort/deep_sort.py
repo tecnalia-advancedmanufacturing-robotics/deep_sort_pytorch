@@ -90,7 +90,7 @@ class DeepSort(object):
         y1 = max(int(y),0)
         y2 = min(int(y+h),self.height-1)
         return x1,y1,x2,y2
-    
+
     def _get_features(self, bbox_xywh, ori_img):
         im_crops = []
         for box in bbox_xywh:

@@ -1,17 +1,16 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 #include "cpu/vision.h"
 
-
 template <typename scalar_t>
-at::Tensor nms_cpu_kernel(const at::Tensor& dets,
-                          const at::Tensor& scores,
-                          const float threshold) {
+at::Tensor nms_cpu_kernel(const at::Tensor& dets, const at::Tensor& scores, const float threshold)
+{
   AT_ASSERTM(!dets.type().is_cuda(), "dets must be a CPU tensor");
   AT_ASSERTM(!scores.type().is_cuda(), "scores must be a CPU tensor");
   AT_ASSERTM(dets.type() == scores.type(), "dets should have the same type as scores");
 
-  if (dets.numel() == 0) {
-    return at::empty({0}, dets.options().dtype(at::kLong).device(at::kCPU));
+  if (dets.numel() == 0)
+  {
+    return at::empty({ 0 }, dets.options().dtype(at::kLong).device(at::kCPU));
   }
 
   auto x1_t = dets.select(1, 0).contiguous();
@@ -24,7 +23,7 @@ at::Tensor nms_cpu_kernel(const at::Tensor& dets,
   auto order_t = std::get<1>(scores.sort(0, /* descending=*/true));
 
   auto ndets = dets.size(0);
-  at::Tensor suppressed_t = at::zeros({ndets}, dets.options().dtype(at::kByte).device(at::kCPU));
+  at::Tensor suppressed_t = at::zeros({ ndets }, dets.options().dtype(at::kByte).device(at::kCPU));
 
   auto suppressed = suppressed_t.data<uint8_t>();
   auto order = order_t.data<int64_t>();
@@ -34,7 +33,8 @@ at::Tensor nms_cpu_kernel(const at::Tensor& dets,
   auto y2 = y2_t.data<scalar_t>();
   auto areas = areas_t.data<scalar_t>();
 
-  for (int64_t _i = 0; _i < ndets; _i++) {
+  for (int64_t _i = 0; _i < ndets; _i++)
+  {
     auto i = order[_i];
     if (suppressed[i] == 1)
       continue;
@@ -44,7 +44,8 @@ at::Tensor nms_cpu_kernel(const at::Tensor& dets,
     auto iy2 = y2[i];
     auto iarea = areas[i];
 
-    for (int64_t _j = _i + 1; _j < ndets; _j++) {
+    for (int64_t _j = _i + 1; _j < ndets; _j++)
+    {
       auto j = order[_j];
       if (suppressed[j] == 1)
         continue;
@@ -59,17 +60,14 @@ at::Tensor nms_cpu_kernel(const at::Tensor& dets,
       auto ovr = inter / (iarea + areas[j] - inter);
       if (ovr >= threshold)
         suppressed[j] = 1;
-   }
+    }
   }
   return at::nonzero(suppressed_t == 0).squeeze(1);
 }
 
-at::Tensor nms_cpu(const at::Tensor& dets,
-               const at::Tensor& scores,
-               const float threshold) {
+at::Tensor nms_cpu(const at::Tensor& dets, const at::Tensor& scores, const float threshold)
+{
   at::Tensor result;
-  AT_DISPATCH_FLOATING_TYPES(dets.type(), "nms", [&] {
-    result = nms_cpu_kernel<scalar_t>(dets, scores, threshold);
-  });
+  AT_DISPATCH_FLOATING_TYPES(dets.type(), "nms", [&] { result = nms_cpu_kernel<scalar_t>(dets, scores, threshold); });
   return result;
 }

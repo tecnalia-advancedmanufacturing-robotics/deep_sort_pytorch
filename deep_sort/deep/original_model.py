@@ -71,13 +71,13 @@ class Net(nn.Module):
             nn.BatchNorm1d(128),
             nn.ELU(inplace=True)
         )
-        # 256 1 1 
+        # 256 1 1
         self.reid = reid
         self.batch_norm = nn.BatchNorm1d(128)
         self.classifier = nn.Sequential(
             nn.Linear(128, num_classes),
         )
-    
+
     def forward(self, x):
         x = self.conv(x)
         x = self.layer1(x)

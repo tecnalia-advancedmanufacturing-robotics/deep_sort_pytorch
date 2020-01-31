@@ -57,7 +57,7 @@ class Tracker(object):
 
     def run(self):
         idx_frame = 0
-        while self.vdo.grab(): 
+        while self.vdo.grab():
             idx_frame += 1
             if idx_frame % self.args.frame_interval:
                 continue
@@ -85,7 +85,7 @@ class Tracker(object):
                     bbox_xyxy = outputs[:,:4]
                     identities = outputs[:,-1]
                     array = []
-                    
+
                     for i,box in enumerate(bbox_xyxy):
                         x1,y1,x2,y2 = [int(i) for i in box]
                         id = identities[i]
