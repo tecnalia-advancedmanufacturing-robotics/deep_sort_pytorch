@@ -20,6 +20,7 @@ class YOLOv3(object):
 
         # constants
         self.size = self.net.width, self.net.height
+        # self.size = 320, 240
         self.score_thresh = score_thresh
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh

@@ -31,7 +31,7 @@ def parse_args():
     return parser.parse_args()
 
 def show_image(img):
-    cv2.imshow("View", img)
+    cv2.imshow("Right View", img)
     cv2.waitKey(1)
 
 def publishCallback(array):

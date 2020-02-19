@@ -37,6 +37,14 @@ def parse_args():
 def show_image(img, name):
     cv2.imshow(name, img)
     cv2.waitKey(1)
+    # msg = CompressedImage()
+    # msg.header.stamp = rospy.Time.now()
+    # msg.format = name
+    # msg.data = np.array(cv2.imencode('.jpg', img)[1]).tostring()
+    # if name == "left":
+    #     left_img_pub.publish(msg)
+    # else:
+    #     right_img_pub.publish(msg)
 
 def publishCallback(array, camera):
     people = locations_2d()
@@ -104,12 +112,14 @@ def do_detection(im, ori_im, camera, window):
                 object_x.j = y2 + (y1-y2)/2
                 array.append(object_x)
             publishCallback(array, camera)
-            ori_im = draw_boxes(ori_im, bbox_xyxy, identities)
-            ori_im = drawPoints(array, ori_im)
+            # ori_im = draw_boxes(ori_im, bbox_xyxy, identities)
+            # ori_im = drawPoints(array, ori_im)
 
-        if args.display:
-            #show_image(ori_im, window)
-            print("Detected at " + camera + " image.")
+            # if args.display:
+                # ori_im = draw_boxes(ori_im, bbox_xyxy, identities)
+                # ori_im = drawPoints(array, ori_im)
+                # show_image(ori_im, window)
+                # print(str(len(array)) + " people were seen in the scene at " + camera + " image.")
 
 # Initiaze DL stuff
 
@@ -132,12 +142,21 @@ class_names = detector.class_names
 
 # Initialize ROS stuff
 rospy.init_node('workspace_monitoring_node', anonymous=True)
+
+# Data Publishers
 pub_left = rospy.Publisher(args.LEFT_OUTPUT_TOPIC, locations_2d, queue_size=1)
 pub_right = rospy.Publisher(args.RIGHT_OUTPUT_TOPIC, locations_2d, queue_size=1)
+
+# Image Publisher
+# left_img_pub = rospy.Publisher("/left/image_raw/compressed", CompressedImage, queue_size=1)
+# right_img_pub = rospy.Publisher("/right/image_raw/compressed", CompressedImage, queue_size=1)
+
+# Subscribers
 sub_right_image = message_filters.Subscriber(args.LEFT_IMAGE_TOPIC, CompressedImage)
 sub_left_image = message_filters.Subscriber(args.RIGHT_IMAGE_TOPIC, CompressedImage)
 ts = message_filters.ApproximateTimeSynchronizer([sub_left_image, sub_right_image], 1, 0.1)
 ts.registerCallback(callback)
+
 print("ROS network initialized!")
 t_start = time.time()
 
@@ -146,6 +165,8 @@ while not rospy.is_shutdown():
     rospy.spin()
 
 t_end = time.time()
+
+# Summary
 duration = t_end - t_start
 avg_fps_rate = idx_frame / duration
 print("\n")
